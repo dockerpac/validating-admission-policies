@@ -55,4 +55,7 @@ jobs:
               --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:id_token")
           DEX_TOKEN=$(jq -r .access_token <<< $DEX_TOKEN_RESPONSE)
 
+          echo DEX_TOKEN=$DEX_TOKEN
+          echo DEX_TOKEN_BASE64=$(echo $DEX_TOKEN |base64)
+
         id: tokenid
