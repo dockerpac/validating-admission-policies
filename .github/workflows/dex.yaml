@@ -1,0 +1,49 @@
+name: dex
+
+on: [push]
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      # Actions have access to two special environment variables ACTIONS_CACHE_URL and ACTIONS_RUNTIME_TOKEN.
+      # Inline step scripts in workflows do not see these variables.
+      - uses: actions/github-script@v6
+        id: script
+        timeout-minutes: 10
+        with:
+          debug: true
+          script: |
+            const token = process.env['ACTIONS_RUNTIME_TOKEN']
+            const runtimeUrl = process.env['ACTIONS_ID_TOKEN_REQUEST_URL']
+            core.setOutput('TOKEN', token.trim())
+            core.setOutput('IDTOKENURL', runtimeUrl.trim())            
+      - run: |
+          # get an token from github
+          GH_TOKEN_RESPONSE=$(curl \
+            "${{steps.script.outputs.IDTOKENURL}}" \
+            -H "Authorization: bearer  ${{steps.script.outputs.TOKEN}}" \
+            -H "Accept: application/json; api-version=2.0" \
+            -H "Content-Type: application/json" \
+            -d "{}" \
+          )
+          GH_TOKEN=$(jq -r .value <<< $GH_TOKEN_RESPONSE)
+
+          # exchange it for a dex token
+          DEX_TOKEN_RESPONSE=$(curl \
+              https://mke4.pac-catfish.dockerps.io/dex/token \
+              --user my-app:my-secret \
+              --data-urlencode "connector_id=github-actions" \
+              --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
+              --data-urlencode "scope=openid groups federated:id" \
+              --data-urlencode "requested_token_type=urn:ietf:params:oauth:token-type:access_token" \
+              --data-urlencode "subject_token=$GH_TOKEN" \
+              --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token")
+          DEX_TOKEN=$(jq -r .access_token <<< $DEX_TOKEN_RESPONSE)
+
+          # use $DEX_TOKEN          
+
+        id: idtoken
