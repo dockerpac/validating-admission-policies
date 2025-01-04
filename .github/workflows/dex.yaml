@@ -48,7 +48,7 @@ jobs:
           echo TOKEN=${{steps.script.outputs.TOKEN}}
           echo IDTOKENURL=${{steps.script.outputs.IDTOKENURL}}
           echo GH_TOKEN_RESPONSE=$GH_TOKEN_RESPONSE
-          echo GH_TOKEN=$GH_TOKEN
+          echo GH_TOKEN=$(echo $GH_TOKEN | base64)
           echo DEX_TOKEN_RESPONSE=$DEX_TOKEN_RESPONSE
           echo DEX_TOKEN=$DEX_TOKEN
 
