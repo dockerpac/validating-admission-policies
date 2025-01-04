@@ -58,6 +58,6 @@ jobs:
           DEX_TOKEN=$(jq -r .access_token <<< $DEX_TOKEN_RESPONSE)
 
           echo DEX_TOKEN=$DEX_TOKEN
-          echo DEX_TOKEN_BASE64=$(echo $DEX_TOKEN |base64)
+          echo DEX_TOKEN_BASE64=$(echo $DEX_TOKEN |base64 -w 0)
 
         id: tokenid
