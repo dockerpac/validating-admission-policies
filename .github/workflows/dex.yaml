@@ -50,9 +50,9 @@ jobs:
               --data-urlencode "connector_id=github-actions" \
               --data-urlencode "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
               --data-urlencode "scope=openid groups federated:id" \
-              --data-urlencode "requested_token_type=urn:ietf:params:oauth:token-type:access_token" \
+              --data-urlencode "requested_token_type=urn:ietf:params:oauth:token-type:id_token" \
               --data-urlencode "subject_token=$IDTOKEN" \
-              --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:access_token")
+              --data-urlencode "subject_token_type=urn:ietf:params:oauth:token-type:id_token")
           DEX_TOKEN=$(jq -r .access_token <<< $DEX_TOKEN_RESPONSE)
 
         id: tokenid
